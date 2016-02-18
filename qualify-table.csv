@@ -1,0 +1,8 @@
+Pii 4, 5, 10, red
+Pii 6, 11, 17, green
+Pii 7, 18, 30, blue
+Pii 8, 31, 50, magenta
+Pii 9, 51, 80, cyan
+Range Limit, 0, 15.140
+SNR Limit, 0, 50
+Pass/Fail SNR, 30
