@@ -14,8 +14,6 @@ Originally created Feb 2016
 import argparse
 import sys, os
 import pdb
-sys.path.append('..')
-import lib
 import pickle
 import pprint as pp
 import numpy as np
@@ -24,7 +22,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from pprint import pprint as pp
 
-parser = argparse.ArgumentParser(description='IRAP logfile analysis')
+sys.path.append('..')
+import lib
+
+parser = argparse.ArgumentParser(description='Radio Qualification logfile analysis')
 parser.add_argument('-f','--ffn_in',help='input file')
 parser.add_argument('-c','--compress',action='store_true',default=False)
 myargs = parser.parse_args()
@@ -55,12 +56,12 @@ with open('qualify-table.csv','rb') as csvfile :
             pass_fail_snr = float(row[1])
 
 pii_array = np.array(pii_table,dtype=[('label','S10'),('low','f4'),('high','f4'),('color','S10')])
-pp(pii_array)
-pp(range_limits)
-pp(snr_limits)
+#pp(pii_array)
+#pp(range_limits)
+#pp(snr_limits)
 #pdb.set_trace()
 
-ffn_in = '/Volumes/Transcend/Data/IRAP/test run = 10 pii 975 864002.pkl'
+ffn_in = 'test-data/test run = 10 pii 975 864002.pkl'
 if not ffn_in :
     ffn_in = lib.query_file()
 
@@ -94,7 +95,7 @@ def plot_ranges(RA,nodeID) :
     plt.plot(t_vec,r_vec,'b.')
     plt.grid(True)
 
-def plot_stopwatch(RA,nodeID,color,low,high) :
+def plot_snr(RA,nodeID,color,low,high,label) :
 
     nodeID_mask = RA['rspID']==nodeID
 
@@ -113,9 +114,8 @@ def plot_stopwatch(RA,nodeID,color,low,high) :
     snr_vec = 20.*np.log10(np.divide(vpk_vec,noise_vec))
 
     lineH, = plt.plot(t_vec,snr_vec,color,
-            hold=True,label='%d-%d'%(low,high),
-            linestyle='None',marker='o',markersize=8,
-            markerfacecolor=color,markeredgecolor=color)
+            hold=True, linestyle='None', marker='o', markersize=6,
+            markerfacecolor=color, markeredgecolor=color, label=label)
     plt.grid(True)
 
     return lineH
@@ -129,7 +129,7 @@ ffn_pdf = os.path.join(path,fn_pdf)
 pdf = PdfPages(ffn_pdf)
 
 plt.ion()
-rsp_list = [101]
+#rsp_list = [101]
 for nodeID in rsp_list :
 
     RA = D['RcmRanges'].ravel()
@@ -147,22 +147,25 @@ for nodeID in rsp_list :
 
     ## SNR Subplot
     ax1 = plt.subplot(212)
-    colors = ['red', 'limegreen', 'blue', 'magenta', 'cyan', 'gray']
+#    colors = ['red', 'limegreen', 'blue', 'magenta', 'cyan', 'gray']
     lineH = []
 #    lineH = [plot_stopwatch(RA,nodeID,colors[0],7,9)]
-    lineH = [plot_stopwatch(RA, nodeID, pii_array[0]['color'], pii_array[0]['low'], pii_array[0]['high'] )]
-    lineH.append(plot_stopwatch(RA,nodeID,colors[1],12,14))
-    lineH.append(plot_stopwatch(RA,nodeID,colors[2],20,21))
-    lineH.append(plot_stopwatch(RA,nodeID,colors[3],66,67))
+    lineH = [ plot_snr(   RA, nodeID, pii_array[0]['color'], pii_array[0]['low'], pii_array[0]['high'], pii_array[0]['label'] )]
+    lineH.append(plot_snr(RA, nodeID, pii_array[1]['color'], pii_array[1]['low'], pii_array[1]['high'], pii_array[1]['label']))
+    lineH.append(plot_snr(RA, nodeID, pii_array[2]['color'], pii_array[2]['low'], pii_array[2]['high'], pii_array[2]['label']))
+    lineH.append(plot_snr(RA, nodeID, pii_array[3]['color'], pii_array[3]['low'], pii_array[3]['high'], pii_array[3]['label']))
     plt.ylabel('SNR = 20*log10(Vpeak/noise)',fontsize=14)
 
-    plt.legend(handles=lineH,bbox_to_anchor=(0.,1.03,1.,.102),
+#    pdb.set_trace()
+
+    plt.legend(bbox_to_anchor=(0.,1.03,1.,.102),
                 mode='expand',ncol=len(lineH),fancybox=True,shadow=True)
+#    plt.legend(lineH)
 
     if 'snr_limits' in locals() :
         ax1.set_ylim(snr_limits)
 
-    xmax = max(ax0.get_)
+#    xmax = max(ax0.get_)
     ax0.set
 
     plt.draw()
