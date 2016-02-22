@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 Usage:
->>> python irap.py [-f inputfile] [-c]
+>>> python qualify.py [-f inputfile] [-c]
 where:
   inputfile is IRAP log filename to process (leave logfile blank to ask for selection)
   -c compress the log to a binary version for faster access later
 
 Originally created Feb 2016
 @author: B. Dewberry
+Feb 21 2016: changed name to qualify.py, added qualify-info.csv
 """
 
 import argparse
@@ -33,6 +34,8 @@ myargs = parser.parse_args()
 ffn_in = myargs.ffn_in
 compress_flag = myargs.compress
 
+#ffn_in = 'test-data/test run = 10 pii 975 864002.pkl'
+
 # temporary override
 #ffn_in = '/Volumes/Transcend/Data/IRAP/test run = 10 pii 975 864002.csv'
 #ffn_in = '/Volumes/Transcend/Data/IRAP/test run = 10 pii 975 864002.pkl'
@@ -41,7 +44,7 @@ compress_flag = myargs.compress
 import csv
 pii_table = []
 with open('qualify-table.csv','rb') as csvfile :
-#    stuff = csv.reader(csvfile,delimiter=' ',quotechar='|')
+    #    stuff = csv.reader(csvfile,delimiter=' ',quotechar='|')
     stuff = csv.reader(csvfile)
     for row in stuff :
         print ', '.join(row)
@@ -61,7 +64,6 @@ pii_array = np.array(pii_table,dtype=[('label','S10'),('low','f4'),('high','f4')
 #pp(snr_limits)
 #pdb.set_trace()
 
-ffn_in = 'test-data/test run = 10 pii 975 864002.pkl'
 if not ffn_in :
     ffn_in = lib.query_file()
 
@@ -72,7 +74,7 @@ ffn_pkl = os.path.join(path,fn_pkl)
 
 #pdb.set_trace()
 if fn_ext == '.csv' :
-#if not os.path.isfile(ffn_pkl) or compress_flag :
+    #if not os.path.isfile(ffn_pkl) or compress_flag :
     D = lib.read_log(ffn_in)
     fh_pkl = open(ffn_pkl,'wb')
     pickle.dump(D,fh_pkl)
@@ -81,7 +83,7 @@ if fn_ext == '.csv' :
 else :
     D = pickle.load(open(ffn_pkl,'rb'))
 
-
+#------------------------- plot_ranges ----------------------------------------
 def plot_ranges(RA,nodeID) :
 
     nodeID_mask = RA['rspID'] == nodeID
@@ -95,7 +97,8 @@ def plot_ranges(RA,nodeID) :
     plt.plot(t_vec,r_vec,'b.')
     plt.grid(True)
 
-def plot_snr(RA,nodeID,color,low,high,label) :
+#------------------------- plot_snr ----------------------------------------
+def plot_snr(RA,nodeID,color,low,high,label,pass_fail) :
 
     nodeID_mask = RA['rspID']==nodeID
 
@@ -116,6 +119,9 @@ def plot_snr(RA,nodeID,color,low,high,label) :
     lineH, = plt.plot(t_vec,snr_vec,color,
             hold=True, linestyle='None', marker='o', markersize=6,
             markerfacecolor=color, markeredgecolor=color, label=label)
+#    pdb.set_trace()
+    if t_vec.size > 0 :
+        plt.plot([min(t_vec),max(t_vec)],[pass_fail,pass_fail],'k-')
     plt.grid(True)
 
     return lineH
@@ -150,10 +156,10 @@ for nodeID in rsp_list :
 #    colors = ['red', 'limegreen', 'blue', 'magenta', 'cyan', 'gray']
     lineH = []
 #    lineH = [plot_stopwatch(RA,nodeID,colors[0],7,9)]
-    lineH = [ plot_snr(   RA, nodeID, pii_array[0]['color'], pii_array[0]['low'], pii_array[0]['high'], pii_array[0]['label'] )]
-    lineH.append(plot_snr(RA, nodeID, pii_array[1]['color'], pii_array[1]['low'], pii_array[1]['high'], pii_array[1]['label']))
-    lineH.append(plot_snr(RA, nodeID, pii_array[2]['color'], pii_array[2]['low'], pii_array[2]['high'], pii_array[2]['label']))
-    lineH.append(plot_snr(RA, nodeID, pii_array[3]['color'], pii_array[3]['low'], pii_array[3]['high'], pii_array[3]['label']))
+    lineH =     [plot_snr(RA, nodeID, pii_array[0]['color'], pii_array[0]['low'], pii_array[0]['high'], pii_array[0]['label'], pass_fail_snr)]
+    lineH.append(plot_snr(RA, nodeID, pii_array[1]['color'], pii_array[1]['low'], pii_array[1]['high'], pii_array[1]['label'], pass_fail_snr))
+    lineH.append(plot_snr(RA, nodeID, pii_array[2]['color'], pii_array[2]['low'], pii_array[2]['high'], pii_array[2]['label'], pass_fail_snr))
+    lineH.append(plot_snr(RA, nodeID, pii_array[3]['color'], pii_array[3]['low'], pii_array[3]['high'], pii_array[3]['label'], pass_fail_snr))
     plt.ylabel('SNR = 20*log10(Vpeak/noise)',fontsize=14)
 
 #    pdb.set_trace()
@@ -174,5 +180,5 @@ for nodeID in rsp_list :
 
 pdf.close()
 
-pdb.set_trace()
-#raw_input('press any key to quit:')
+#pdb.set_trace()
+raw_input('press any key to quit:')
