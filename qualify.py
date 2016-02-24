@@ -64,6 +64,7 @@ pii_array = np.array(pii_table,dtype=[('label','S10'),('low','f4'),('high','f4')
 #pp(snr_limits)
 #pdb.set_trace()
 
+#ffn_in = './test-data/test run = 10 pii 975 864002.pkl'
 if not ffn_in :
     ffn_in = lib.query_file()
 
@@ -119,7 +120,6 @@ def plot_snr(RA,nodeID,color,low,high,label,pass_fail) :
     lineH, = plt.plot(t_vec,snr_vec,color,
             hold=True, linestyle='None', marker='o', markersize=6,
             markerfacecolor=color, markeredgecolor=color, label=label)
-#    pdb.set_trace()
     if t_vec.size > 0 :
         plt.plot([min(t_vec),max(t_vec)],[pass_fail,pass_fail],'k-')
     plt.grid(True)
@@ -160,7 +160,9 @@ for nodeID in rsp_list :
     lineH.append(plot_snr(RA, nodeID, pii_array[1]['color'], pii_array[1]['low'], pii_array[1]['high'], pii_array[1]['label'], pass_fail_snr))
     lineH.append(plot_snr(RA, nodeID, pii_array[2]['color'], pii_array[2]['low'], pii_array[2]['high'], pii_array[2]['label'], pass_fail_snr))
     lineH.append(plot_snr(RA, nodeID, pii_array[3]['color'], pii_array[3]['low'], pii_array[3]['high'], pii_array[3]['label'], pass_fail_snr))
+    lineH.append(plot_snr(RA, nodeID, pii_array[4]['color'], pii_array[4]['low'], pii_array[4]['high'], pii_array[4]['label'], pass_fail_snr))
     plt.ylabel('SNR = 20*log10(Vpeak/noise)',fontsize=14)
+    plt.xlabel('Time (s)')
 
 #    pdb.set_trace()
 
