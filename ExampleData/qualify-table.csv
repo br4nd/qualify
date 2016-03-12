@@ -1,0 +1,27 @@
+FigSize,15,9,
+,,,
+Pii 4-5,5,10, red
+Pii 6,11,17, green
+Pii 7,18,30, blue
+Pii 8,31,50, magenta
+Pii 9,51,80, cyan
+,,,
+Range Limit,1,10,
+SNR Limit,0,60,
+Pass/Fail SNR,30,,
+,,,
+SNR Bias,101,0.2,
+SNR Bias,102,1.7,
+SNR Bias,103,1.9,
+SNR Bias,104,3.5,
+SNR Bias,105,1.6,
+SNR Bias,106,2.7,
+SNR Bias,107,0.1,
+SNR Bias,108,1.6,
+SNR Bias,109,0,
+SNR Bias,110,2,
+SNR Bias,111,2,
+SNR Bias,112,4.2,
+SNR Bias,113,2.1,
+SNR Bias,114,3.2,
+SNR Bias,115,2.1,
